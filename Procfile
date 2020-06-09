@@ -1,0 +1,1 @@
+web: gunicorn cytoscape-addon.wsgi --log-file - 
