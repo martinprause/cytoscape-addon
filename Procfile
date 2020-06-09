@@ -1,1 +1,1 @@
-web: gunicorn cytoscape-addon.wsgi --log-file
+web: gunicorn cytoscape-addon.wsgi --log-file -
