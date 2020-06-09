@@ -1,1 +1,1 @@
-web: gunicorn cytoscape-addon.wsgi --log-file -
+web: java -jar target/cytoscape-addon-0.0.2.jar
