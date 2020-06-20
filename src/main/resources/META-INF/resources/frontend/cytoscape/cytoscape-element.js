@@ -56,7 +56,7 @@ class CytoscapeElement extends PolymerElement {
 
 		var mycy = cytoscape({
 	        
-	        container: document.getElementById('cy'), // container to render in
+	        container: document.getElementById('cy'), 
 
 			elements: [],	
 	        layout: {
@@ -65,10 +65,21 @@ class CytoscapeElement extends PolymerElement {
 	      
 	    });
 
+		
+		
+		
+		this.cy=mycy;
+  	}
+
+	registerEdgeHandling(parameter){
+		let e=JSON.parse(parameter);
+		var mythis=this;
+		
 		let defaults = {
-			  preview: true, // whether to show added edges preview before releasing selection
-			  hoverDelay: 150, // time spent hovering over a target node before it is considered selected
-			  handleNodes: 'node', // selector/filter function for whether edges can be made from a given node
+			
+			  preview: e.preview, // true,  whether to show added edges preview before releasing selection
+			  hoverDelay: e.hoverDelay, // 150, time spent hovering over a target node before it is considered selected
+			  handleNodes: e.handleNodes, // 'node' selector/filter function for whether edges can be made from a given node
 			  snap: false, // when enabled, the edge can be drawn by just moving close to a target node
 			  snapThreshold: 50, // the target node must be less than or equal to this many pixels away from the cursor/finger
 			  snapFrequency: 15, // the number of times per second (Hz) that snap checks done (lower is less expensive)
@@ -76,8 +87,8 @@ class CytoscapeElement extends PolymerElement {
 			  disableBrowserGestures: true, // during an edge drawing gesture, disable browser gestures such as two-finger trackpad swipe and pinch-to-zoom
 
 		
-		 handlePosition: function( node ){
-			    return 'middle top'; // sets the position of the handle in the format of "X-AXIS Y-AXIS" such as "left top", "middle top"
+			  handlePosition: function( node ){
+			    return e.handlePosition; // 'middle top' sets the position of the handle in the format of "X-AXIS Y-AXIS" such as "left top", "middle top"
 			  },
 			  handleInDrawMode: false, // whether to show the handle in draw mode
 			  edgeType: function( sourceNode, targetNode ){
@@ -148,50 +159,30 @@ class CytoscapeElement extends PolymerElement {
 			};
 			
 		
-		mycy.edgehandles( defaults );
-		
-		
-		mycy.cxtmenu({
-				selector: 'node',
-				commands: [
-					{
-						content: 'Delete',
+		this.cy.edgehandles( defaults );
+	}
+
+    registerContextMenu(context) {
+		let e=JSON.parse(context);
+		var mythis=this;
+		let mycommands = new Array(e.commands.length);
+		for (let i in e.commands) {
+			mycommands[i]={	
+				        content: e.commands[i],
 						select: function(ele){
-							mythis.dispatchEvent(new CustomEvent("actionEvent",mythis._createActionEvent("DeleteNode",ele.id())));
-						},
-					},
-					{
-						content: 'Edit',
-						select: function(ele){
-							mythis.dispatchEvent(new CustomEvent("actionEvent",mythis._createActionEvent("EditNode",ele.id())));
+							mythis.dispatchEvent(new CustomEvent("actionEvent",mythis._createActionEvent(e.commands[i],ele.id())));
 						}
 					}
-				]
-		});
+		}
 		
-		mycy.cxtmenu({
-				selector: 'edge',
-				commands: [
-					{
-						content: 'Delete',
-						select: function(ele){
-							//console.log( ele.id() );
-							mythis.dispatchEvent(new CustomEvent("actionEvent",mythis._createActionEvent("DeleteEdge",ele.id())));
-						},
-					},
-					{
-						content: 'Edit',
-						select: function(ele){
-							//console.log( ele.position() );
-							mythis.dispatchEvent(new CustomEvent("actionEvent",mythis._createActionEvent("EditEdge",ele.id())));
-						}
-					}
-				]
-		});
-
-		this.cy=mycy;
-  	}
-
+		let contextMenu= {
+			selector: e.selector,
+			commands: mycommands
+		}
+		
+		this.cy.cxtmenu(contextMenu)
+	
+	}
 
 	registerEvent(event,selector) {
 		let mythis=this;
@@ -209,14 +200,12 @@ class CytoscapeElement extends PolymerElement {
 
 	addNode(node){
 		let n=JSON.parse(node);
-		console.log(n);
 		this.cy.add(n);
 		this.dispatchEvent(new CustomEvent("nodeHasBeenAddedEvent",this._nodeAddedEvent(n)));
 	}
 	
 	addEdge(edge) {
 		let e=JSON.parse(edge);
-		console.log(e)
 		this.cy.add(e);
 		this.dispatchEvent(new CustomEvent("edgeHasBeenAddedEvent",this._edgeAddedEvent(e)));
 		

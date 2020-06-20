@@ -3,7 +3,7 @@
 
     <groupId>com.github.martinprause.cytoscape</groupId>
     <artifactId>cytoscape-addon</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
     <name>cytoscape-addon</name>
     <description>Integration of paper-slider for Vaadin platform</description>
     <url>https://github.com/martinprause/cytoscape-addon</url>
@@ -33,6 +33,8 @@
 	  </scm>
 
 	  <!-- We are deploying to Sonatype, so enter Sonatype Distribution Stuff Here -->
+	  
+	  <!-- 
 	  <distributionManagement>
 	      <snapshotRepository>
 	          <id>ossrh</id>
@@ -44,7 +46,7 @@
 	      </repository>
 	  </distributionManagement>
 
-
+     -->
 
 
     <properties>
