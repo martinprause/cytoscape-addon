@@ -176,6 +176,27 @@ public class View extends Div {
 		    	});
 		    });
 		    buttonLayout.add(b8);
+		    
+		    
+		    Button b9=new Button("Get Zoom and Pan");
+		    b9.addClickListener( e -> {
+		    	cy.getZoomAndPan().then(e2 -> {
+		    		String s=e2.toJson();
+		    		setRawOutput(s);
+		    	});
+		    });
+		    buttonLayout.add(b9);
+		    
+		    
+		    
+		    Button b10=new Button("Set Viewport (Zoom and Pan)");
+		    b10.addClickListener( e -> {
+		    	
+		   	
+		    	cy.setViewport("{\"zoom\":1.0,\"pan\":{\"x\":100,\"y\":100}}");
+		    });
+		    buttonLayout.add(b10);
+		    
 
 	}
 	
@@ -288,11 +309,11 @@ public class View extends Div {
 	    GraphStyles gs=new GraphStyles();
 	    
 	    //Define the style for nodes
-	    GeneralGraphStyles node=new GeneralGraphStyles.Builder().background_color("#c00").label("data(id)").build();
+	    GeneralGraphStyles node=new GeneralGraphStyles.Builder().label("data(id)").build();
 	    gs.addStyle("node", node);
 	    
 	    //Define the style for edges
-	    GeneralGraphStyles edge=new GeneralGraphStyles.Builder().width("2").line_color("#00c").line_style("dotted").build();
+	    GeneralGraphStyles edge=new GeneralGraphStyles.Builder().width("2").line_color("#00c").curve_style("straight").target_arrow_shape("triangle-backcurve").build();
 	    gs.addStyle("edge", edge);
 	    
 	    //Define the style for selected nodes

@@ -197,6 +197,16 @@ class CytoscapeElement extends PolymerElement {
 		this.cy.remove(nodes); 
 		this.dispatchEvent(new CustomEvent("successEvent",this._createSuccessEvent("deleteAll")));
 	}
+	
+	getZoomAndPan() {
+		return {zoom: this.cy.zoom(), pan: this.cy.pan() } 
+	}
+	
+	setViewport(viewport) {
+		let n=JSON.parse(viewport);
+		this.cy.viewport(n);
+		this.dispatchEvent(new CustomEvent("successEvent",this._createSuccessEvent("viewport")));
+	}
 
 	addNode(node){
 		let n=JSON.parse(node);

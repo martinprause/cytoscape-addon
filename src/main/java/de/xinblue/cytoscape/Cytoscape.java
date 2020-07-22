@@ -229,6 +229,12 @@ public class Cytoscape extends Div {
 
     public void loadStyle(String styles) {
     	getElement().callJsFunction("loadStyles",styles);
+    }    
+    public PendingJavaScriptResult getZoomAndPan() {
+    	return getElement().callJsFunction("getZoomAndPan");
+    }
+    public void setViewport(String viewport) {
+    	getElement().callJsFunction("setViewport",viewport);
     }
     
     

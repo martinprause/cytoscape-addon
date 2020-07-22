@@ -3,7 +3,7 @@
 
     <groupId>com.github.martinprause.cytoscape</groupId>
     <artifactId>cytoscape-addon</artifactId>
-    <version>0.0.3</version>
+    <version>0.0.5</version>
     <name>cytoscape-addon</name>
     <description>Integration of paper-slider for Vaadin platform</description>
     <url>https://github.com/martinprause/cytoscape-addon</url>
@@ -16,7 +16,9 @@
 	          <distribution>repo</distribution>
 	      </license>
 	  </licenses>
-  
+      <organization>
+        <name>Xinblue</name>
+      </organization>
 	  <developers>
 	      <developer>
 	          <name>Martin Prause</name>
