@@ -24,7 +24,11 @@ class CytoscapeElement extends PolymerElement {
 		  dragObject:{
 			type: String,
 			value: null
-	 	  }
+	 	  },
+	 	 cyName: {
+		        type: String,
+		        value: null
+		      },
 	    };
 	 }
 
@@ -36,6 +40,7 @@ class CytoscapeElement extends PolymerElement {
 
  	constructor() {
     	super();
+
 		let l=window.Vaadin.Flow.dndConnector.__ondropListener;
 		window.Vaadin.Flow.dndConnector.__ondropListener=function(e){
 			this.unitx=e.currentTarget.getBoundingClientRect().width/this.cy.extent().w;
@@ -51,12 +56,11 @@ class CytoscapeElement extends PolymerElement {
 	    super.ready();
 		cytoscape.use( cxtmenu );
 		cytoscape.use( edgehandles ); 
-		
 		var mythis=this;
 
 		var mycy = cytoscape({
 	        
-	        container: document.getElementById('cy'), 
+	        container: document.getElementById(this.cyName), 
 
 			elements: [],	
 	        layout: {
@@ -65,9 +69,76 @@ class CytoscapeElement extends PolymerElement {
 	      
 	    });
 
+		/*
 		
-		
-		
+			var makeTippy = function(node, html){
+		      return tippy( node.popperRef(), {
+		        html: html,
+		        trigger: 'manual',
+		        arrow: true,
+		        placement: 'bottom',
+		        hideOnClick: false,
+		        interactive: true
+		      } ).tooltips[0];
+		    };
+
+		    var hideTippy = function(node){
+		      var tippy = node.data('tippy');
+
+		      if(tippy != null){
+		        tippy.hide();
+		      }
+		    };
+
+		    var hideAllTippies = function(){
+		    	mycy.nodes().forEach(hideTippy);
+		    };
+
+		    mycy.on('tap', function(e){
+		      if(e.target === mycy){
+		        hideAllTippies();
+		      }
+		    });
+
+		    mycy.on('tap', 'edge', function(e){
+		      hideAllTippies();
+		    });
+
+		    mycy.on('zoom pan', function(e){
+		      hideAllTippies();
+		    });
+
+		    mycy.nodes().forEach(function(n){
+		      var g = n.data('name');
+
+		      var $links = [
+		        {
+		          name: 'GeneCard',
+		          url: 'http://www.genecards.org/cgi-bin/carddisp.pl?gene=' + g
+		        },
+		        {
+		          name: 'UniProt search',
+		          url: 'http://www.uniprot.org/uniprot/?query='+ g +'&fil=organism%3A%22Homo+sapiens+%28Human%29+%5B9606%5D%22&sort=score'
+		        },
+		        {
+		          name: 'GeneMANIA',
+		          url: 'http://genemania.org/search/human/' + g
+		        }
+		      ].map(function( link ){
+		        return h('a', { target: '_blank', href: link.url, 'class': 'tip-link' }, [ t(link.name) ]);
+		      });
+
+		      var tippy = makeTippy(n, h('div', {}, $links));
+
+		      n.data('tippy', tippy);
+
+		      n.on('click', function(e){
+		        tippy.show();
+
+		        mycy.nodes().not(n).forEach(hideTippy);
+		      });
+		    });
+		*/ 
 		this.cy=mycy;
   	}
 
@@ -214,6 +285,12 @@ class CytoscapeElement extends PolymerElement {
 		this.dispatchEvent(new CustomEvent("nodeHasBeenAddedEvent",this._nodeAddedEvent(n)));
 	}
 	
+	addElements(elements){
+		let n=JSON.parse(elements);
+		this.cy.add(n);
+		this.dispatchEvent(new CustomEvent("successEvent",this._createSuccessEvent("addElements")));
+	}
+	
 	addEdge(edge) {
 		let e=JSON.parse(edge);
 		this.cy.add(e);
@@ -226,6 +303,13 @@ class CytoscapeElement extends PolymerElement {
 		this.cy.remove(collection); 
 		this.dispatchEvent(new CustomEvent("successEvent",this._createSuccessEvent("deleteNode")));
 	}
+	
+	deleteChildren(parentId) {
+		let collection = this.cy.nodes(`[parent = "${parentId}"]`);
+		this.cy.remove(collection); 
+		this.dispatchEvent(new CustomEvent("successEvent",this._createSuccessEvent("deleteNode")));
+	}
+	
 	
 	deleteEdge(id) {
 		let collection = this.cy.edges(`[id = "${id}"]`);
@@ -287,9 +371,16 @@ class CytoscapeElement extends PolymerElement {
 		this.dispatchEvent(new CustomEvent("successEvent",this._createSuccessEvent("loadStyles")));
 	}
 	
-	loadLayout(layout){
-		this.cy.json(JSON.parse(layout));	
-		this.cy.fit();
+	loadLayout(layoutName){
+		
+		var layout = this.cy.layout({
+			  name: layoutName
+			});
+
+		layout.run();
+		
+		//this.cy.json(JSON.parse(layout));	
+		//this.cy.fit();
 		this.dispatchEvent(new CustomEvent("successEvent",this._createSuccessEvent("loadLayout")));
 	}
 
@@ -311,6 +402,11 @@ class CytoscapeElement extends PolymerElement {
 	setData(id,data){
 		let element = this.cy.getElementById(id);
 		element.data(JSON.parse(data));
+	}
+	
+	getElementWithId(id){
+		let element = this.cy.$id(id);
+		return element.jsons();
 	}
 
 }

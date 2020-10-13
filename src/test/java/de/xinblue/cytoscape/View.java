@@ -79,6 +79,31 @@ public class View extends Div {
 			} else if (actualObj.get("action").asText().equalsIgnoreCase("deletenode") ) {
 				setOutput("Contextmenu Delete Node");
 				cy.deleteNode(actualObj.get("id").asText());
+			} else if (actualObj.get("action").asText().equalsIgnoreCase("expand") ) {
+				String id=actualObj.get("id").asText();
+				cy.getElementWithId(id).then( e2 -> {
+					String s1=e2.toJson();
+					try {
+						JsonNode selectedObject = new ObjectMapper().readTree(s1);
+						Iterator<JsonNode> iterator = selectedObject.iterator();
+						while (iterator.hasNext()) {
+							JsonNode js=iterator.next();
+							
+							String xValue=js.at("/position/x").asText();
+							String yValue=js.at("/position/y").asText();
+							cy.addElements(cy.getInnerGraph(id,Double.valueOf(xValue),Double.valueOf(yValue)));			
+							
+						}
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+					
+					
+				});
+				
+			} else if (actualObj.get("action").asText().equalsIgnoreCase("compress") ) {
+				String id=actualObj.get("id").asText();
+				cy.deleteChildren(id);
 			} else if (actualObj.get("action").asText().equalsIgnoreCase("showedge") ) {
 				setOutput("Contextmenu Edit Edge");
 			}
@@ -196,6 +221,20 @@ public class View extends Div {
 		    	cy.setViewport("{\"zoom\":1.0,\"pan\":{\"x\":100,\"y\":100}}");
 		    });
 		    buttonLayout.add(b10);
+		
+		    
+		    Button b11=new Button("Preset Layout");
+		    b11.addClickListener( e -> {
+		    	cy.loadLayout("preset");
+		    });
+		    buttonLayout.add(b11);
+		    
+		    
+		    Button b12=new Button("Breadthfirst Layout");
+		    b12.addClickListener( e -> {
+		    	cy.loadLayout("breadthfirst");
+		    });
+		    buttonLayout.add(b12);
 		    
 
 	}
@@ -229,7 +268,7 @@ public class View extends Div {
 	
 	private void createDashBoardContent() {
 		//Create Cytoscape Canvas
-	    Cytoscape cy=new Cytoscape();
+	    Cytoscape cy=new Cytoscape("cy1");
 	    cy.setWidth("100%");
 	    cy.setHeight("600px");   
 	    cy.addClassName("cy");
@@ -238,7 +277,7 @@ public class View extends Div {
 	    cy.registerStandardEdgeHandling();
 
 	    //Create context menu for nodes and edges. Tap on an edge or node (left mouse down for 1 second)
-	    cy.createContextMenu("node",new String[]{"DeleteNode","EditNode"});
+	    cy.createContextMenu("node",new String[]{"DeleteNode","EditNode","Expand","Compress"});
 	    cy.createContextMenu("edge",new String[]{"ShowEdge"});
 	    
 	    cy.addActionListener(e -> {
@@ -329,6 +368,8 @@ public class View extends Div {
     
         //Load demo graph
 	    cy.loadGraph(cy.getDemoGraph2());
+	    
+	    
 	    
 	    createButtonLayout(cy);
 	    createNodeList(cy);

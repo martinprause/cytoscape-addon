@@ -32,8 +32,9 @@ public class Cytoscape extends Div {
 	 * Constructor. Set the element ID to "cy" which is later recognized via document.getElementById('cy')
 	 * 
 	 */
-	public Cytoscape() {
-		this.setId("cy");
+	public Cytoscape(String elementID) {
+		getElement().setProperty("cyName", elementID);
+		this.setId(elementID);
 	}
 	
 	/*
@@ -230,6 +231,12 @@ public class Cytoscape extends Div {
     public void loadStyle(String styles) {
     	getElement().callJsFunction("loadStyles",styles);
     }    
+    
+    
+    public void loadLayout(String layout) {
+    	getElement().callJsFunction("loadLayout",layout);
+    }   
+    
     public PendingJavaScriptResult getZoomAndPan() {
     	return getElement().callJsFunction("getZoomAndPan");
     }
@@ -333,6 +340,25 @@ public class Cytoscape extends Div {
     	return null;
     }
     
+    public PendingJavaScriptResult addElements(JsonArray elements) {
+    	try {
+        	return getElement().callJsFunction("addElements", elements.toJson());
+    	} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+    	return null;
+    }
+    
+    
+    public PendingJavaScriptResult getElementWithId(String id) {
+    	try {
+        	return getElement().callJsFunction("getElementWithId", id);
+    	} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+    	return null;
+    }
+    
     /* Adds an edge to the graph and calls the "edgeHasBeenAddedEvent". Returns null if the edge is not a well-formated JsonObject-
      * @param node
      */
@@ -351,6 +377,11 @@ public class Cytoscape extends Div {
      */
     public void deleteNode(String id) {
     	getElement().callJsFunction("deleteNode",id);
+    }
+    
+    
+    public void deleteChildren(String parentId) {
+    	getElement().callJsFunction("deleteChildren",parentId);
     }
     
     /* Delete the edge identified by the ID. Calls SuccessListener.
@@ -496,7 +527,6 @@ public class Cytoscape extends Div {
         position1.put("x", 0);
         position1.put("y", 0);
         node1.put("position", position1);
-
         node1.put("data", data1);
    
         JsonObject node2 = Json.createObject();
@@ -509,23 +539,109 @@ public class Cytoscape extends Div {
         position2.put("x", 30);
         position2.put("y", 30);
         node2.put("position", position2);
+        /*
         
+        JsonObject node3 = Json.createObject();
+        JsonObject data3 = Json.createObject();
+        data3.put("id", "b1"); 
+        data3.put("name", "Name B1");  
+        data3.put("parent", "b");
+        node3.put("data", data3);
+        
+        JsonObject position3 = Json.createObject();
+        position3.put("x", 0);
+        position3.put("y", 0);
+        node3.put("position", position3);
+        
+        
+        JsonObject node4 = Json.createObject();
+        JsonObject data4 = Json.createObject();
+        data4.put("id", "b2"); 
+        data4.put("name", "Name B2");  
+        data4.put("parent", "b");
+        node4.put("data", data4);
+        
+        JsonObject position4 = Json.createObject();
+        position4.put("x", 50);
+        position4.put("y", 50);
+        node4.put("position", position4);
+
+        
+        */
         
         JsonObject edge = Json.createObject();
-        JsonObject data3 = Json.createObject();
-        data3.put("id", "db");    
-        data3.put("source", "d");   
-        data3.put("target", "b");   
-        edge.put("data", data3);
-              
+        JsonObject data5 = Json.createObject();
+        data5.put("id", "db");    
+        data5.put("source", "d");   
+        data5.put("target", "b");   
+        edge.put("data", data5);
         
+        /*
+        JsonObject edge1 = Json.createObject();
+        JsonObject data6 = Json.createObject();
+        data6.put("id", "dbinner");    
+        data6.put("source", "b1");   
+        data6.put("target", "b2");   
+        edge1.put("data", data6);
+
+        */
         elementsArray.set(0, node1);
         elementsArray.set(1, node2);
+        //elementsArray.set(2, node3);
+        //elementsArray.set(3, node4);
         elementsArray.set(2, edge);
+        //elementsArray.set(5, edge1);
         
         elements.put("elements", elementsArray);
         
         return elements.toJson();
     }
+    
+    public static JsonArray getInnerGraph(String parent,double x, double y) {
+    	JsonArray elementsArray = Json.createArray();
+        
+        JsonObject node3 = Json.createObject();
+        JsonObject data3 = Json.createObject();
+        data3.put("id", "b1"); 
+        data3.put("name", "Name B1");  
+        data3.put("parent", parent);
+        node3.put("data", data3);
+        
+        JsonObject position3 = Json.createObject();
+        position3.put("x", 0+x);
+        position3.put("y", 0+y);
+        node3.put("position", position3);
+        
+        
+        JsonObject node4 = Json.createObject();
+        JsonObject data4 = Json.createObject();
+        data4.put("id", "b2"); 
+        data4.put("name", "Name B2");  
+        data4.put("parent", parent);
+        node4.put("data", data4);
+        
+        JsonObject position4 = Json.createObject();
+        position4.put("x", 50+x);
+        position4.put("y", 50+y);
+        node4.put("position", position4);
+        
+        JsonObject edge1 = Json.createObject();
+        JsonObject data6 = Json.createObject();
+        data6.put("id", "dbinner");    
+        data6.put("source", "b1");   
+        data6.put("target", "b2");   
+        edge1.put("data", data6);
+        
+        elementsArray.set(0, node3);
+        elementsArray.set(1, node4);
+        elementsArray.set(2, edge1);
+
+        
+        return elementsArray;
+    }
+    
+    
+    
+        
    
 }
