@@ -54,8 +54,16 @@ class CytoscapeElement extends PolymerElement {
 
 	ready(){
 	    super.ready();
-		cytoscape.use( cxtmenu );
-		cytoscape.use( edgehandles ); 
+		try {
+			cytoscape.use( cxtmenu );
+		} catch (e) {
+
+		}
+		try {
+			cytoscape.use( edgehandles );
+		} catch (e) {
+
+		}
 		var mythis=this;
 
 		var mycy = cytoscape({
